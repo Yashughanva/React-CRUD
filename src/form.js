@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-
 export function FormData() {
     const [isExit, setIsExit] = useState(-1);
     const [studentData, setStudentData] = useState(JSON.parse(localStorage.getItem("studentData")) || []);
     const [search, setSearch] = useState(JSON.parse(localStorage.getItem("data")) || []);
+    const [select, setSelect] = useState([]);
     const [student, setStudent] = useState({
         firstName: "",
         surName: "",
@@ -120,8 +120,30 @@ export function FormData() {
 
             setStudentData(updated);
         }
-    };
-
+        if (search.length === setSelect.length) {
+            const updated = search.map((id) => {
+                return { ...id, isChecked: false }
+            })
+            setSelect([]);
+            setSearch(updated)
+        } else {
+            const notupdated = search.map((id) => {
+                return { ...id, isChecked: true }
+            })
+            setSelect(notupdated);
+            setSearch(notupdated);
+        }
+    }
+    function checkAllHandler(){
+        if(search.length===select.length){
+            setSelect([])
+        }else{
+            const postId = search.map((item)=>{
+                return item.id
+            })
+            setSelect(postId);
+        }
+    }
     // Search
     const handleSearch = (e) => {
         const value = e.target.value;
@@ -155,10 +177,9 @@ export function FormData() {
                 <input type="checkbox" id="cricket" name="cricket" value="cricket" onChange={(e) => handleChange(e)} checked={student.cricket} />cricket<br />
                 <input type="checkbox" id="chess" name="chess" value="chess" onChange={(e) => handleChange(e)} checked={student.chess} />chess<br /><br />
                 <input type="submit" value="submit" onClick={() => handleSubmit()} /><br /><br />
-                <input type="text" className="search" onKeyUp={(e) => handleSearch(e)}/>
+                <input type="text" className="search" onKeyUp={(e) => handleSearch(e)} />
             </div>
-
-            <table className="container table table-border">
+            <table className="table table-border">
                 <thead>
                     <th>firstName</th>
                     <th>surname</th>
@@ -170,7 +191,7 @@ export function FormData() {
                     <th>hobby</th>
                     <th>delete</th>
                     <th>edit</th>
-                    <th><input type="checkbox" name="select" checked={studentData.every((value) => value?.isChecked)} onChange={handleAllChange} /> Select ALL</th>
+                    <th><input type="checkbox" name="select" checked={studentData.every((value) => value?.isChecked)} onClick={checkAllHandler} onChange={handleAllChange} /> {search.length === select.length ? 'Unchecked' : 'All Checked'}</th>
                 </thead>
                 <tbody>
                     {studentData.map((item, index) => {
@@ -192,6 +213,7 @@ export function FormData() {
                     })}
                 </tbody>
             </table>
+            <h4>Result print here:~ {search.length === select.length ? "all Record have been checked" : "please checked all record"}</h4>
         </>
     )
 }
